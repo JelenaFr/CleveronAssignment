@@ -1,56 +1,37 @@
 package com.example.test.controller;
 
-import org.junit.Before;
+import com.example.test.model.Level1;
+import com.example.test.service.PermissionService;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class PermissionControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    WebApplicationContext wac;
+    @InjectMocks
+    private PermissionController permissionController;
+    @Mock
+    private PermissionService permissionService;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).dispatchOptions(true).build();
+    @Test
+    void createNewFirstLevelPermissionTest() {
+        permissionController.createNewFirstLevelPermission(new Level1());
+        Mockito.verify(permissionService).saveLevel1(new Level1());
     }
 
     @Test
-    void createNewFirstLevelPermission() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/new1/");
-        ResultActions result = mockMvc.perform(request);
-        result.andExpect(status().isOk());
-    }
-
-
-    @Test
-    void findAllSecondLevelsByFirstLevelParam() throws Exception {
-        this.mockMvc.perform(get("/level2/{param}/", 1)).andExpect(status().isOk());
-
-
+    void findAllSecondLevelsByFirstLevelParamTest() {
+        permissionController.findAllSecondLevelsByFirstLevelParam(1L);
+        Mockito.verify(permissionService).findAllSecondLevelPermissionByFirstLevelId(1L);
     }
 
     @Test
-    void findAllThirdLevelsBySecondLevelParam() throws Exception {
-        this.mockMvc.perform(get("/level2/5/"))
-            .andExpect(status().isOk());
+    void findAllThirdLevelsBySecondLevelParam() {
+        permissionController.findAllThirdLevelsBySecondLevelParam(2L);
+        Mockito.verify(permissionService).findAllThirdLevelPermissionBySecondLevelId(2L);
     }
-
-
 }
